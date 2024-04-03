@@ -1,53 +1,228 @@
+<!DOCTYPE html>
 <html>
 <head>
-<style>
-.button {
-background-color: #23b83c;
-	border: 2px solid #020353;
-	color: whitesmoke;
-	padding: 0.5em 0.5em;
-	text-align: center;
-	text-decoration: none;
-	font-size: 1em;
-	display: inline-block;
-	width: 18%;
-	border-radius: 5px;
-	box-shadow: 3px 3px 8px 0 #000; 
+    <!-- Include Bootstrap CSS and JS files -->
+<link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+    <title>Predict Salmon Price</title>
+    <style>
+        body {
+            background-image: url("{{url_for('static', filename='background.jpg')}}");
+            background-repeat: no-repeat;
+            background-size: cover;
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            width: 50%;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: rgba(255, 255, 255, 0.8);
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+            text-align: center;
+        }
+        .transparentContainer {
+    background-color: transparent;
+    padding: 20px;
+    box-sizing: border-box;
+    display: flex;
+    justify-content: space-between; /* Align items to the start and end of the container */
+    align-items: center; /* Vertically center items */
 }
-body {
-  background-image: url("{{url_for('static', filename='background.jpg')}}");
-  background-repeat: no-repeat;
- background-size: 100% 100%;
-}
-h1{
-   background-color: Green;
-  color: white;
-}
-h3{
-   background-color: green;
-  color: white;
+        h1 {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 0;
+            border-radius: 5px 5px 0 0;
+            margin-top: 0;
+        }
+        label {
+            font-weight: bold;
+        }
+        input[type="text"], select {
+            width: 100%;
+            padding: 10px;
+            margin: 5px 0;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        .button {
+            background-color: #4cae4f;
+            color: white;
+            padding: 14px 20px;
+            margin: 8px 0;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            width: 100%;
+            font-size: 16px;
+        }
+        .button:hover {
+            background-color: #45a049;
+        }
+        textarea {
+            width: 100%;
+            height: 100px;
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        * New Styles for Logo Placement */
+        .logo-container {
+            display: flex; /* Make logos sit next to each other */
+            justify-content: space-between; /* Distribute logos evenly */
+            padding: 10px; /* Add some padding for logos */
+            position: fixed; /* Fixed position at the top */
+            width: 100%; /* Full width */
+            z-index: 1; /* Ensure it stays above other content */
+        }
+
+        .logo {
+            width: 20%; /* Set the desired width */
+            height: auto; /* Maintain aspect ratio */
+        }
+        #prediction_text {
+            font-size: 50px; 
+            font-weight: bold;
+        }
+
+        #prediction-box { /* Give an ID to your <p> for specific styling */
+  background-color: #f0f5f5; /* Light background color */
+  border-radius: 10px; /* Adjust the number for more/less roundedness */
+  padding: 15px;  /* Padding within the box */
+  margin: 10px 0; /* Optional spacing above and below  */ 
 }
 
+#toggleContainer {
+    margin-right: 20px;
+}
 
-</style>
+.toggleText {
+    color: rgba(255, 255, 255, 0.8); /* Light shade of white */
+    margin-bottom: 5px;
+}
+
+#toggleButton {
+    width: 200px;
+    background-color: #4cae4f;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    cursor: pointer;
+    border-radius: 5px;
+    transition: background-color 0.3s;
+}
+
+#toggleButton:hover {
+    background-color: #45a049;
+}
+
+    </style>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.3/jquery.min.js"></script>
 </head>
 <body>
-<center>
+    <div class="transparentContainer">
+        <img src="static/logo.png" alt="Logo" class="logo">
+        <div id="toggleContainer" >
+            <button id="toggleButton" onclick="redirectToSimpleModel()">Simple Model</button>
+        </div>        
+    </div>
+     
+    <section id="multiVariantSection">
+          
+    <div class="container">
+        <h1>Predict Salmon Price <br> <span style="font-size: 25px; color: rgb(255, 255, 255);">(Multi-Variance Model)</span></h1>
+        <form action="{{ url_for('predict')}}" method="post" id="predictionForm">
+            <label for="length">Salmon Length (cm):</label><br>
+<input type="range" id="length" name="length" min="20" max="35" value="24" style="width: 60%; height: 20px; -webkit-appearance: none; background: linear-gradient(to right, #14d73b, #08911d); border: 1px solid #4caf4f00; border-radius: 10px;"><br>
+<span id="lengthValue" style="display: inline-block; width: 40px; text-align: center;">25</span> cm
+<br><br>
 
+            <label for="species">Salmon Species:</label>
+            <select id="species" name="species">
+                <option value="Chinook">Chinook</option>
+                <option value="Coho">Coho</option>
+                <option value="Sockeye">Sockeye</option>
+                <option value="Pink">Pink</option>
+                <option value="Chum">Chum</option>
+            </select><br><br>
+            <img id="salmon-image" src="{{ url_for('static', filename='chinook.png') }}" alt="Salmon" height="150">
 
-<h1>Predict House Price</h1>
-<pre>
-<form action="{{ url_for('predict')}}"method="post">
+            <br><br>
+            <label for="type">Salmon Type:</label>
+            <select id="type" name="type">
+                <option value="Wild">Wild</option>
+                <option value="Farm">Farm</option>
+            </select><br><br>
 
-<input type='text' name="area" placeholder="Area in sq. ft" required="required"/>
+            <button type="submit" class="button">Predict Price</button>
+        </form>
+        <p id="prediction-box">Predicted Price of Salmon for this Length: <br><span id="prediction_text"></span></p>
+    </div>
+</section>
 
+<script>
+    // Default to multi-variant model
+    let multiVariant = true;
 
-<button type="submit" class="button">Predict Price</button>
-</form>
-<textarea>
-{{prediction_text}}
-</textarea>
-</pre>
-</center>
+    // Function to redirect to the simple model site
+    function redirectToSimpleModel() {
+        window.location.href = 'http://127.0.0.1:5002/'; // Change the URL to your simple model site
+    }
+
+    // Function to toggle between models (removed)
+    // No need for toggle functionality in the multivariant model
+
+    // Hide the multi-variant model section when the page loads (removed)
+    // No need to hide the multivariant section since it's always shown
+
+    const slider = document.getElementById('length');
+    const lengthValueDisplay = document.getElementById('lengthValue');
+    const speciesSelect = document.getElementById('species');
+    const salmonImage = document.getElementById('salmon-image');
+
+    slider.addEventListener('input', () => {
+        lengthValueDisplay.textContent = slider.value; 
+    });
+
+    speciesSelect.addEventListener('change', () => {
+        const selectedSpecies = speciesSelect.value;
+        const imagePath = `static/${selectedSpecies.toLowerCase()}.png`;
+        salmonImage.src = imagePath;
+    });
+
+    // Multi-Variant Model Prediction (unchanged)
+    $('#predictionForm').submit(function(event) {
+        event.preventDefault();
+
+        const length = slider.value; 
+        const species = $('#species').val();
+        const salmon_type = $('#type').val();
+        const modelType = multiVariant ? 'multi' : 'simple'; // Pass the selected model type to the server
+
+        $.ajax({
+            url: '/predict',
+            method: 'POST',
+            data: { length: length, species: species, type: salmon_type, modelType: modelType },
+            success: function(response) {
+                $('#prediction_text').text(response.prediction_text); 
+            }
+        });
+    });
+</script>
+
+    
+    
+    
+
+    
+    
+      
 </body>
 </html>

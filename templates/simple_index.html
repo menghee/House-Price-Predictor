@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simple Model - Salmon Price Predictor</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+
+<body>
+    <div class="container">
+        <h1>Simple Model - Predict Salmon Price</h1>
+        <form action="{{ url_for('predict')}}" method="post" id="predictionForm">
+            <label for="length">Salmon Length (cm):</label><br>
+            <input type="range" id="length" name="length" min="20" max="35" value="24"><br>
+            <span id="lengthValue">25</span> cm
+            <br><br>
+
+            <button type="submit" class="button">Predict Price</button>
+        </form>
+        <p id="prediction-box">Predicted Price of Salmon for this Length: <br><span id="prediction_text"></span></p>
+    </div>
+
+    <script src="{{ url_for('static', filename='jquery.min.js') }}"></script>
+    <script>
+        const slider = document.getElementById('length');
+        const lengthValueDisplay = document.getElementById('lengthValue');
+
+        slider.addEventListener('input', () => {
+            lengthValueDisplay.textContent = slider.value;
+        });
+
+        // Simple Model Prediction
+        $('#predictionForm').submit(function (event) {
+            event.preventDefault();
+            const length = $('#length').val();
+
+            $.ajax({
+                url: '/predict',
+                method: 'POST',
+                data: { length: length, modelType: 'simple' },
+                success: function (response) {
+                    $('#prediction_text').text(response.prediction_text);
+                }
+            });
+        });
+    </script>
+</body>
+
+</html>

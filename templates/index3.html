@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Predict Salmon Price</title>
+    <style>
+        body {
+            background-image: url("{{url_for('static', filename='background.jpg')}}");
+            background-repeat: no-repeat;
+            background-size: cover;
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            width: 50%;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: rgba(255, 255, 255, 0.8);
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+            text-align: center;
+        }
+        h1 {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 0;
+            border-radius: 5px 5px 0 0;
+            margin-top: 0;
+        }
+        label {
+            font-weight: bold;
+        }
+        input[type="text"], select {
+            width: 100%;
+            padding: 10px;
+            margin: 5px 0;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        .button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 14px 20px;
+            margin: 8px 0;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            width: 100%;
+            font-size: 16px;
+        }
+        .button:hover {
+            background-color: #45a049;
+        }
+        textarea {
+            width: 100%;
+            height: 100px;
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        * New Styles for Logo Placement */
+        .logo-container {
+            display: flex; /* Make logos sit next to each other */
+            justify-content: space-between; /* Distribute logos evenly */
+            padding: 10px; /* Add some padding for logos */
+            position: fixed; /* Fixed position at the top */
+            width: 100%; /* Full width */
+            z-index: 1; /* Ensure it stays above other content */
+        }
+
+        .logo {
+            width: 100%; /* Set the desired width */
+            height: auto; /* Maintain aspect ratio */
+        }
+    </style>
+</head>
+<body>
+    <div class="logo-container">
+        <div class="logo">
+          <img src="{{ url_for('static', filename='ailabs_w.png') }}" alt="AiLabs Logo" style="width: 200px; height: auto;" >
+        </div>
+      </div>
+      
+    <div class="container">
+        <h1>Predict Salmon Price</h1>
+        <form action="{{ url_for('predict')}}" method="post">
+            <label for="length">Salmon Length (cm):</label>
+            <input type="text" id="length" name="length" placeholder="Enter Salmon Length (cm)" required><br><br>
+
+            <label for="species">Salmon Species:</label>
+            <select id="species" name="species">
+                <option value="Chinook">Chinook</option>
+                <option value="Coho">Coho</option>
+                <option value="Sockeye">Sockeye</option>
+                <option value="Pink">Pink</option>
+                <option value="Chum">Chum</option>
+            </select><br><br>
+
+            <label for="type">Salmon Type:</label>
+            <select id="type" name="type">
+                <option value="Wild">Wild</option>
+                <option value="Farm">Farm</option>
+            </select><br><br>
+
+            <button type="submit" class="button">Predict Price</button>
+        </form>
+        <textarea readonly>{{prediction_text}}</textarea>
+    </div>
+</body>
+</html>
